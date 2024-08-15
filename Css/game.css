@@ -53,6 +53,11 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 30px;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .cell:hover {
