@@ -5,8 +5,8 @@ for (let row = 0; row < 3; row++) {
     const rowDiv = document.createElement('div');
     rowDiv.classList.add('row');
     for (let col = 0; col < 3; col++) {
-        const cellDiv = document.createElement('div');
-        cellDiv.classList.add('field');
+        const fieldDiv = document.createElement('div');
+        fieldDiv.classList.add('field');
 
         // Create a 3x3 grid of cells within each field
         for (let innerRow = 0; innerRow < 3; innerRow++) {
@@ -14,14 +14,14 @@ for (let row = 0; row < 3; row++) {
             innerRowDiv.classList.add('inner-row');
 
             for (let innerCol = 0; innerCol < 3; innerCol++) {
-                const innerCellDiv = document.createElement('div');
-                innerCellDiv.classList.add('cell');
-                innerRowDiv.appendChild(innerCellDiv);
+                const cellDiv = document.createElement('div');
+                cellDiv.classList.add('cell');
+                innerRowDiv.appendChild(cellDiv);
             }
-            cellDiv.appendChild(innerRowDiv);
+            fieldDiv.appendChild(innerRowDiv);
         }
 
-        rowDiv.appendChild(cellDiv);
+        rowDiv.appendChild(fieldDiv);
     }
 
     game.appendChild(rowDiv);
