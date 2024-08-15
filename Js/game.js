@@ -76,10 +76,15 @@ function logCellAsNotation(row, col, content) {
 }
 
 function clickCell(row, col) {
-    const cellDiv = document.getElementsByClassName('cell')[row * 9 + col];
+    const docRow = document.getElementsByClassName('row')[Math.floor(row/3)];
+    const docField = docRow.getElementsByClassName('field')[Math.floor(col/3)];
+
+    const cellNumb = (row % 3) * 3 + (col % 3);
+
+    const cellDiv = docField.getElementsByClassName('cell')[cellNumb];
     const cellContent = cellDiv.getElementsByTagName('p')[0];
 
-    if (cellContent.textContent === ' ') {
+    if (cellContent.textContent === ' ' || true) {
         cellContent.textContent = turn;
 
         if (turn === 'X') {
