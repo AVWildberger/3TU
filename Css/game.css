@@ -1,0 +1,46 @@
+:root {
+    --color-1: #17153B;
+    --color-2: #2E236C;
+    --color-3: #433D8B;
+    --color-4: #C8ACD6;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: var(--color-1);
+}
+
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 0px 30px var(--color-4);
+}
+
+.row {
+    display: flex;
+}
+
+.field {
+    width: 180px;
+    height: 180px;
+    border: 6px solid var(--color-2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--color-3);
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    border: 1px solid var(--color-2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
