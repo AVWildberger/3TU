@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Xml;
 
 namespace _3TU_C_
 {
@@ -154,10 +155,7 @@ namespace _3TU_C_
                     string receivedString = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     //Console.WriteLine($"Received string: {receivedString}");
 
-                    if (receivedString.StartsWith("VALID"))
-                    {
-
-                    }
+                    //GetAnswer()
 
                     bool isValid = !string.IsNullOrEmpty(receivedString);
 
@@ -215,7 +213,17 @@ namespace _3TU_C_
             {
                 string[] arr = request.Split(';');
 
-                answer = PlacePlayer(arr[0] == "X", Convert.ToByte(arr[1]), Convert.ToByte(arr[2])).ToString();
+                string algebraicNotation = arr[1];
+
+                ConvertNotationToCoordinates(algebraicNotation, out int x, out int y);
+
+                bool isLegal = IsLegalPlacement(gameBoard, x, y);
+                answer = isLegal.ToString().ToUpper();
+
+                if (isLegal)
+                {
+                    answer += PlacePlayer(arr[0] == "X", Convert.ToByte(arr[1]), Convert.ToByte(arr[2])).ToString();
+                }
             }
 
             return answer;
@@ -242,6 +250,17 @@ namespace _3TU_C_
             }
 
             return result;
+        }
+
+        static bool ConvertNotationToCoordinates(string s, out int posX, out int posY)
+        {
+            int grid = s[1] - 1;
+            int cell = s[2] - 1;
+
+            posX = (grid % 3) * 3 + (cell % 3);
+            posY = grid - (grid % 3) + ((cell - (cell % 3)) / 3);
+
+            return s[0] == 'X';
         }
     }
 }
