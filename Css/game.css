@@ -3,9 +3,10 @@
     --color-2: #2E236C;
     --color-3: #433D8B;
     --color-4: #5E5A9E;
-    --color-5: #C8ACD6;
+    --color-5: #7A76B2;
+    --color-6: #8A84C7;
+    --color-7: #B3AED9;
 }
-
 body {
     display: flex;
     justify-content: center;
@@ -16,18 +17,15 @@ body {
     color: white;
     font-family: 'Roboto', sans-serif;
 }
-
 .game {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0px 0px 30px var(--color-5);
+    box-shadow: 0px 0px 30px var(--color-6);
 }
-
 .row {
     display: flex;
 }
-
 .field {
     width: 180px;
     height: 180px;
@@ -39,12 +37,14 @@ body {
 
     background-color: var(--color-3);
 }
-
+.highlight {
+    background-color: var(--color-6);
+    border: 6px solid var(--color-5);
+}
 .inner-row {
     display: flex;
     flex-direction: row;
 }
-
 .cell {
     width: 60px;
     height: 60px;
@@ -53,14 +53,33 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 30px;
-
+    
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    transition: background-color 0.2 ease-in-out;
 }
-
+.highlight > * > .cell {
+    border: 1px solid var(--color-5);
+}
 .cell:hover {
     background-color: var(--color-4);
     cursor: pointer;
+}
+.highlight > * > .cell:not(:has(.x)):not(:has(.o)):hover {
+    background-color: var(--color-7);
+}
+
+.cell:has(.x) {
+    background-color: red;
+}
+
+.cell:has(.o) {
+    background-color: green;
+}
+
+.cell:has(.x):hover,
+.cell:has(.o):hover {
+    cursor:not-allowed;
 }

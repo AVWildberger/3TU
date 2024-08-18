@@ -1,5 +1,6 @@
 // Global variables
 const game = document.getElementsByClassName('game')[0];
+const ws = new WebSocket('ws://localhost:8080');
 let turn = 'X';
 
 // Generate a 3x3 grid of fields, each containing a 3x3 grid of cells
@@ -68,17 +69,24 @@ function generateGame() {
 }
 // Get cell by field and cell number
 function getCell(field, fieldCell) {
-    const rowIndex = Math.floor((field-1)/3);
-    const fieldInRowIndex = Math.floor((field-1)%3);
     const rowInFieldIndex = Math.floor((fieldCell-1)/3);
     const cellInFieldIndex = Math.floor((fieldCell-1)%3);
 
-    const docRow = document.getElementsByClassName('row')[rowIndex];
-    const docField = docRow.getElementsByClassName('field')[fieldInRowIndex];
+    const docField = getField(field);
     const docInnerRow = docField.getElementsByClassName('inner-row')[rowInFieldIndex];
     const docCell = docInnerRow.getElementsByClassName('cell')[cellInFieldIndex];
 
     return docCell;
+}
+// Get field by field number
+function getField(field) {
+    const rowIndex = Math.floor((field-1)/3);
+    const fieldInRowIndex = Math.floor((field-1)%3);
+
+    const docRow = document.getElementsByClassName('row')[rowIndex];
+    const docField = docRow.getElementsByClassName('field')[fieldInRowIndex];
+
+    return docField;
 }
 // Convert indexed notation to algebraic notation
 function indexedToNotation(row, col, char) {
@@ -105,24 +113,105 @@ function logCellAsNotation(row, col, content) {
 }
 // Handle cell click
 function clickCell(row, col) {
-    console.log(row, col)
+    // console.log(row, col)
     const notation = `${turn}${row}${col}`;
 
     // Get cell and cell content
     const cellDiv = getCell(notation.charAt(1), notation.charAt(2));
     const cellContent = cellDiv.getElementsByTagName('p')[0];
+    
+    // TODO: Remove this
+    updateCell(notation, notation.charAt(2));
+
+
+    // Attempt to place a field
+    const packet = `PLACE;${notation}`; 
+    ws.send(packet);
+}
+// Update cell content and highlight next field
+function updateCell(notation, nextField) {
+
+    // Convert next field to number if neccessary
+    let nfAsNumb = nextField;
+    if (typeof nextField === 'string') {
+        nfAsNumb = parseInt(nextField);
+    }
+
+    console.log(`Updating cell: ${notation}`);
+    console.log(`Next field: ${nextField}`);
+    // Get cell and cell content
+    const cellDiv = getCell(notation.charAt(1), notation.charAt(2));
+    const cellContent = cellDiv.getElementsByTagName('p')[0];
 
     // Update cell content
-    if (cellContent.textContent === ' ' || true) {
-        cellContent.textContent = turn;
+    cellContent.textContent = notation.charAt(0);
+    if (notation.charAt(0) === 'X') {
+        cellContent.classList.add('x');
+    } else {
+        cellContent.classList.add('o');
+    }
+    // Update turn
+    turn = turn === 'X' ? 'O' : 'X';
 
-        // Log cell notations
-        const indexed = notationToIndexed(notation);
-        console.log(`Notation: ${notation} Reverse: [${indexed[0]}, ${indexed[1]}]`);
+    // Highlight next field
 
-        // Update turn
-        turn = turn === 'X' ? 'O' : 'X';
+    for (let i = 1; i <= 9; i++) {
+        const field = getField(i);
+
+        if (i === nfAsNumb) {
+            field.classList.add('highlight');
+        } else {
+            field.classList.remove('highlight');
+        }
     }
 }
 
+
+/* WebSocket event listeners */
+
+// Handle connection to server
+ws.onopen = () => {
+    console.log('Connected to server');
+}
+// Handle messages from server
+ws.onmessage = (message) => {
+    console.log(`Received server message: ${message.data}`);
+
+    const msgType = '';
+    const data = message.data.split(';');
+
+    // seperate message type and data
+    data = data.map((item) => {
+        if (item.includes('?')) {
+            const [before, after] = item.split('?');
+            msgType = before;
+            return after;
+        }
+        return item;
+    });
+
+    // Handle message types
+    switch (msgType) {
+        case 'PLACE':
+            if (data[0].toUpperCase() === 'TRUE') {
+                updateCell(data[1], data[2]);
+            } else {
+                console.log('[Server] Invalid placement');
+            }
+            break;
+        default:
+            console.log(`Unknown server message type: ${msgType}`);
+            break;
+    }
+}
+// Handle disconnection from server
+ws.onclose = () => {
+    console.log('Disconnected from server');
+}
+// Handle errors
+ws.onerror = (error) => {
+    console.log('Error: ', error);
+}
+
+// Generate game
 generateGame();
