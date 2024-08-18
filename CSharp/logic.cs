@@ -13,7 +13,7 @@ namespace _3TU_C_
         static async Task Main()
         {
             #region WebSocket
-            HttpListener httpListener = new();
+            HttpListener httpListener = new HttpListener();
             httpListener.Prefixes.Add("http://localhost:8080/");
             httpListener.Start();
             Console.WriteLine("WebSocket server started at ws://localhost:8080/");
@@ -152,14 +152,12 @@ namespace _3TU_C_
                 var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    string receivedString = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    //Console.WriteLine($"Received string: {receivedString}");
+                    string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    Console.WriteLine($"Received message: {receivedMessage}");
 
-                    //GetAnswer()
+                    string response = GetAnswer(receivedMessage);
 
-                    bool isValid = !string.IsNullOrEmpty(receivedString);
-
-                    byte[] responseBuffer = Encoding.UTF8.GetBytes(isValid.ToString().ToLower());
+                    byte[] responseBuffer = Encoding.UTF8.GetBytes(response);
                     await webSocket.SendAsync(new ArraySegment<byte>(responseBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
@@ -175,31 +173,35 @@ namespace _3TU_C_
 
             if (request.StartsWith("VALID"))
             {
+                answer = "VALID";
+
                 string[] arr = request.Split(';');
 
                 if (IsLegalPlacement(gameBoard, Convert.ToInt32(arr[1]), Convert.ToInt32(arr[2])))
                 {
-                    answer = "TRUE";
+                    answer += "TRUE";
                 }
                 else
                 {
-                    answer = "FALSE";
+                    answer += "FALSE";
                 }
             }
             else if (request.StartsWith("WIN"))
             {
+                answer = "WIN";
+
                 bool hasWon = HasWon(gameBoard, out bool? winner, out bool?[,] capturedFields);
 
                 if (hasWon)
                 {
-                    answer = "TRUE";
+                    answer += "TRUE";
 
                     if (winner == true) { answer += ";X"; }
                     else { answer += ";O"; }
                 }
                 else
                 {
-                    answer = "TIE";
+                    answer += "TIE";
 
                     foreach (bool? b in capturedFields)
                     {
