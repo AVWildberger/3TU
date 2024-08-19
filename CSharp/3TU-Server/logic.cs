@@ -6,14 +6,14 @@ using System.Xml;
 
 namespace _3TU_C_
 {
-    internal class Program
+    internal class logic
     {
         static bool?[,] gameBoard = InitGameBoard();
 
         static async Task Main()
         {
             #region WebSocket
-            HttpListener httpListener = new HttpListener();
+            HttpListener httpListener = new();
             httpListener.Prefixes.Add("http://localhost:8080/");
             httpListener.Start();
             Console.WriteLine("WebSocket server started at ws://localhost:8080/");
@@ -59,9 +59,9 @@ namespace _3TU_C_
         {
             capturedFields = new bool?[3, 3];
 
-            for (int row = 0; row < board.Length; row++)
+            for (int row = 0; row < board.GetLength(0) / 3; row++)
             {
-                for (int col = 0; col < board.Length; col++)
+                for (int col = 0; col < board.GetLength(1) / 3; col++)
                 {
                     capturedFields[row, col] = FieldStatus(board, row * 3, col * 3);
                 }
@@ -89,7 +89,7 @@ namespace _3TU_C_
             bool? field8 = board[firstX + 1, firstY + 2];
             bool? field9 = board[firstX + 2, firstY + 2];
 
-            bool? capturedPlayer = null;
+            bool capturedPlayer = true;
 
             if (AreSameAndNotNull(field1, field2, field3, ref capturedPlayer) || // Option: 1
                 AreSameAndNotNull(field4, field5, field6, ref capturedPlayer) || // Option: 2
@@ -131,15 +131,14 @@ namespace _3TU_C_
             return (!HasWon(board, out _, out bool?[,] capturedFields) && capturedFields[row / 3, col / 3] == null && board[row, col] == null);
         }
 
-        static bool AreSameAndNotNull(bool? a, bool? b, bool? c, ref bool? boolValue)
+        static bool AreSameAndNotNull(bool? a, bool? b, bool? c, ref bool boolValue)
         {
             if (a != null && a == b && b == c)
             {
-                boolValue = a;
+                boolValue = Convert.ToBoolean(a);
                 return true;
             }
 
-            boolValue = null;
             return false;
         }
 
@@ -171,24 +170,9 @@ namespace _3TU_C_
         {
             string answer = "";
 
-            if (request.StartsWith("VALID"))
+            if (request.StartsWith("WIN"))
             {
-                answer = "VALID";
-
-                string[] arr = request.Split(';');
-
-                if (IsLegalPlacement(gameBoard, Convert.ToInt32(arr[1]), Convert.ToInt32(arr[2])))
-                {
-                    answer += "TRUE";
-                }
-                else
-                {
-                    answer += "FALSE";
-                }
-            }
-            else if (request.StartsWith("WIN"))
-            {
-                answer = "WIN";
+                answer = "WIN;";
 
                 bool hasWon = HasWon(gameBoard, out bool? winner, out bool?[,] capturedFields);
 
@@ -213,18 +197,20 @@ namespace _3TU_C_
             }
             else if (request.StartsWith("PLACE"))
             {
+                answer = "PLACE;";
+
                 string[] arr = request.Split(';');
 
                 string algebraicNotation = arr[1];
 
-                ConvertNotationToCoordinates(algebraicNotation, out int x, out int y);
+                ConvertNotationToCoordinates(algebraicNotation, out byte x, out byte y);
 
                 bool isLegal = IsLegalPlacement(gameBoard, x, y);
-                answer = isLegal.ToString().ToUpper();
+                answer += isLegal.ToString().ToUpper();
 
                 if (isLegal)
                 {
-                    answer += PlacePlayer(arr[0] == "X", Convert.ToByte(arr[1]), Convert.ToByte(arr[2])).ToString();
+                    answer += ";" + PlacePlayer(arr[1][0] == 'X', x, y).ToString();
                 }
             }
 
@@ -254,13 +240,13 @@ namespace _3TU_C_
             return result;
         }
 
-        static bool ConvertNotationToCoordinates(string s, out int posX, out int posY)
+        static bool ConvertNotationToCoordinates(string s, out byte posX, out byte posY)
         {
-            int grid = s[1] - 1;
-            int cell = s[2] - 1;
+            int grid = s[1] - 1 - '0';
+            int cell = s[2] - 1 - '0';
 
-            posX = (grid % 3) * 3 + (cell % 3);
-            posY = grid - (grid % 3) + ((cell - (cell % 3)) / 3);
+            posX = Convert.ToByte(grid % 3 * 3 + cell % 3);
+            posY = Convert.ToByte(grid - (grid % 3) + ((cell - (cell % 3)) / 3));
 
             return s[0] == 'X';
         }
