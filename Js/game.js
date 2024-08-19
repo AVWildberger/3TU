@@ -121,7 +121,7 @@ function clickCell(row, col) {
     const cellContent = cellDiv.getElementsByTagName('p')[0];
     
     // TODO: Remove this
-    updateCell(notation, notation.charAt(2));
+    // updateCell(notation, notation.charAt(2));
 
 
     // Attempt to place a field
@@ -177,18 +177,9 @@ ws.onopen = () => {
 ws.onmessage = (message) => {
     console.log(`Received server message: ${message.data}`);
 
-    const msgType = '';
-    const data = message.data.split(';');
-
-    // seperate message type and data
-    data = data.map((item) => {
-        if (item.includes('?')) {
-            const [before, after] = item.split('?');
-            msgType = before;
-            return after;
-        }
-        return item;
-    });
+    const [before, after] = message.data.split('?');
+    const msgType = before;
+    const data = after.split(';');
 
     // Handle message types
     switch (msgType) {
