@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace _3TU_C_
 {
-    internal class logic
+    internal class Logic
     {
         static bool?[,] gameBoard = InitGameBoard();
 
@@ -172,7 +172,7 @@ namespace _3TU_C_
 
             if (request.StartsWith("WIN"))
             {
-                answer = "WIN;";
+                answer = "WIN?";
 
                 bool hasWon = HasWon(gameBoard, out bool? winner, out bool?[,] capturedFields);
 
@@ -197,7 +197,7 @@ namespace _3TU_C_
             }
             else if (request.StartsWith("PLACE"))
             {
-                answer = "PLACE;";
+                answer = "PLACE?";
 
                 string[] arr = request.Split(';');
 
@@ -210,6 +210,7 @@ namespace _3TU_C_
 
                 if (isLegal)
                 {
+                    answer += $";{algebraicNotation}";
                     answer += ";" + PlacePlayer(arr[1][0] == 'X', x, y).ToString();
                 }
             }
