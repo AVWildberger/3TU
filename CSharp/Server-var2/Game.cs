@@ -15,6 +15,26 @@ namespace _3TU_Server
 
         public GameStatus State { get; private set; }
 
+        public string GetBoardAsString()
+        {
+            string board = "";
+
+            // row 1 from field 1, then row 1 from field 2, then row 1 from field 3, then row 2 from field 1, etc.
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        board += gameFields[i * 3 + k].GetRow(j);
+                    }
+                }
+            }
+
+            return board;
+        }
+
         public string GetFieldStatuses()
         {
             string fieldStatusesString = "";

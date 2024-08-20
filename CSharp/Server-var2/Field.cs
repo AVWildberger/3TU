@@ -42,6 +42,27 @@ namespace _3TU_Server
             return false;
         }
 
+        public string GetRow(int row)
+        {
+            string rowString = "";
+
+            for (int i = 0; i < 3; i++)
+            {
+                bool? cell = cells[row * 3 + i];
+
+                if (cell == null)
+                {
+                    rowString += "_";
+                }
+                else
+                {
+                    rowString += cell == true ? "X" : "O";
+                }
+            }
+
+            return rowString;
+        }
+
         protected override GameStatus CheckWin()
         {
             /* Check rows and columns */

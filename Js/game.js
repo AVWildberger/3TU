@@ -67,13 +67,13 @@ function generateGame() {
         game.appendChild(rowDiv);
     }
 }
-// Get cell by field and cell number
-function getCell(field, fieldCell) {
-    return getField(field).getElementsByClassName('cell')[fieldCell-1];
-}
 // Get field by field number
 function getField(field) {
     return document.getElementsByClassName('field')[field-1];
+}
+// Get cell by field and cell number
+function getCell(field, fieldCell) {
+    return getField(field).getElementsByClassName('cell')[fieldCell-1];
 }
 // Convert indexed notation to algebraic notation
 function indexedToNotation(row, col, char) {
@@ -157,8 +157,8 @@ function updateCell(notation, nextField) {
         }
     }
 }
-// Highlight won fields
-function highlightWonFields(fields) {
+// Mark won fields
+function markWonFields(fields) {
     // fields are input as a string like this: XO_XXOO__
 
     for (let i = 0; i < fields.length; i++) {
@@ -166,22 +166,76 @@ function highlightWonFields(fields) {
 
         if (fields.charAt(i) === 'X') {
             field.classList.add('won-x');
+            field.classList.remove('won-o');
         } else if (fields.charAt(i) === 'O') {
             field.classList.add('won-o');
+            field.classList.remove('won-x');
         } else {
             field.classList.remove('won-x');
             field.classList.remove('won-o');
+        }
+    }
+}
+// Highlights the fields to play to
+function highlightFields(fields) {
+    // fields are input as a string like this: XO_XXOO__
+
+    markWonFields(fields);
+
+    for (let i = 0; i < fields.length; i++) {
+        const field = getField(i+1);
+
+        if (field.classList.contains('won-x') || field.classList.contains('won-o')) {
+            field.classList.remove('highlight');
+        } else {
             field.classList.add('highlight');
         }
     }
 }
+// Sync board with server
+function syncBoard(data) {
+    const cellStates = data[0]
+    
+    for (let i = 0; i < cellStates.length; i++) {
+        const cellInfo = cellStates[i];
 
+        const row = Math.floor(i / 9);
+        const col = i % 9;
+
+        const notation = indexedToNotation(row, col, cellInfo[0])
+
+        const cellDiv = getCell(notation.charAt(1), notation.charAt(2));
+        const cellContent = cellDiv.getElementsByTagName('p')[0];
+
+        if (cellInfo[0] === 'X') {
+            cellContent.textContent = 'X';
+            cellContent.classList.add('x');
+            cellContent.classList.remove('o');
+        } else if (cellInfo[0] === 'O') {
+            cellContent.textContent = 'O';
+            cellContent.classList.add('o');
+            cellContent.classList.remove('x');
+        } else {
+            cellContent.textContent = ' ';
+            cellContent.classList.remove('x');
+            cellContent.classList.remove('o');
+        }
+
+        // console.log(`Synced cell ${i+1}/${cellStates.length}`);
+    }
+
+    highlightFields(data[1]);
+}
+
+// Generate game
+generateGame();
 
 /* WebSocket event listeners */
 
 // Handle connection to server
 ws.onopen = () => {
     console.log('Connected to server');
+    ws.send('FETCH');
 }
 // Handle messages from server
 ws.onmessage = (message) => {
@@ -206,8 +260,11 @@ ws.onmessage = (message) => {
             } else if (data[0].toUpperCase() === 'TIE') {
                 console.log('[Server] Tie');
             } else {
-                highlightWonFields(data[1]);
+                highlightFields(data[1]);
             }
+            break;
+        case 'FETCH':
+            syncBoard(data);
             break;
         default:
             console.log(`Unknown server message type: ${msgType}`);
@@ -222,6 +279,3 @@ ws.onclose = () => {
 ws.onerror = (error) => {
     console.log('Error: ', error);
 }
-
-// Generate game
-generateGame();

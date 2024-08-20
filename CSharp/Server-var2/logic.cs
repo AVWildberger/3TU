@@ -120,6 +120,13 @@ namespace _3TU_C_
                     answer += $"TRUE;{algebraicNotation};{next}";
                 }
             }
+            else if (request.StartsWith("FETCH"))
+            {
+                answer = "FETCH?";
+
+                answer += game.GetBoardAsString();
+                answer += ";" + game.GetFieldStatuses();
+            }
 
             return answer;
         }
