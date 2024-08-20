@@ -146,15 +146,7 @@ function updateCell(notation, nextField) {
         const packet = 'WIN';
         ws.send(packet);
     } else {       
-        for (let i = 1; i <= 9; i++) {
-            const field = getField(i);
-
-            if (i === nfAsNumb) {
-                field.classList.add('highlight');
-            } else {
-                field.classList.remove('highlight');
-            }
-        }
+        highlightField(nfAsNumb);
     }
 }
 // Mark won fields
@@ -192,8 +184,20 @@ function highlightFields(fields) {
         }
     }
 }
+// Highlights a single field
+function highlightField(field) {
+    for (let i = 1; i <= 9; i++) {
+        const fieldDoc = getField(i);
+
+        if (i === field) {
+            fieldDoc.classList.add('highlight');
+        } else {
+            fieldDoc.classList.remove('highlight');
+        }
+    }
+}
 // Sync board with server
-function syncBoard(data) {
+function syncBoardData(data) {
     const cellStates = data[0]
     
     for (let i = 0; i < cellStates.length; i++) {
@@ -224,7 +228,14 @@ function syncBoard(data) {
         // console.log(`Synced cell ${i+1}/${cellStates.length}`);
     }
 
-    highlightFields(data[1]);
+    turn = data[2].charAt(0);
+    
+    if (data[3].charAt(0) - '0' === 0) {
+        highlightFields(data[1]);
+    } else {
+        markWonFields(data[1]);
+        highlightField(data[3].charAt(0) - '0');
+    }
 }
 
 // Generate game
@@ -264,7 +275,7 @@ ws.onmessage = (message) => {
             }
             break;
         case 'FETCH':
-            syncBoard(data);
+            syncBoardData(data);
             break;
         default:
             console.log(`Unknown server message type: ${msgType}`);

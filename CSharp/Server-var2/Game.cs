@@ -11,7 +11,11 @@ namespace _3TU_Server
         private Field[] gameFields;
         private GameStatus[] fieldStatuses;
 
-        private int nextField = -1;
+        private int nextField = 0;
+        private char nextPlayer = 'X';
+        
+        public int NextField { get { return nextField; } }
+        public char NextPlayer { get { return nextPlayer; } }
 
         public GameStatus State { get; private set; }
 
@@ -101,6 +105,12 @@ namespace _3TU_Server
                 return -1;
             }
 
+            if (player != nextPlayer)
+            {
+                // Client should resync
+                return -2;
+            }
+
             if (gameFields[targetField].PlacePlayer(player, targetCell) == true)
             {
                 if (gameFields[targetField].State != GameStatus.None)
@@ -108,6 +118,8 @@ namespace _3TU_Server
                     fieldStatuses[targetField] = gameFields[targetField].State;
                     State = CheckWin();
                 }
+
+                nextPlayer = player == 'X' ? 'O' : 'X';
 
                 nextField = GetNextField(targetCell);
                 return nextField;

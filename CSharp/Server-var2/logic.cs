@@ -68,6 +68,17 @@ namespace _3TU_C_
             }
         }
 
+        // Get the board and all relevant information as a string
+        static string FetchBoard()
+        {
+            string board = game.GetBoardAsString();
+            string fieldStatuses = game.GetFieldStatuses();
+            string nextPlayer = game.NextPlayer.ToString();
+            string nextField = game.NextField.ToString();
+
+            return board + ";" + fieldStatuses + ";" + nextPlayer + ";" + nextField;
+        }
+
         static string GetAnswer(string request)
         {
             string answer = "";
@@ -111,9 +122,19 @@ namespace _3TU_C_
 
                 int next = game.PlacePlayer(algebraicNotation);
 
-                if (next == -1)
+                if (next < 0)
                 {
-                    answer += "FALSE";
+                    if (next == -1)
+                    {
+                        answer += "FALSE";
+                    }
+
+                    // Client should resync
+                    if (next == -2)
+                    {
+                        // Send the board and field statuses to the client to resync
+                        answer = "FETCH?" + FetchBoard();
+                    }
                 }
                 else
                 {
@@ -122,10 +143,7 @@ namespace _3TU_C_
             }
             else if (request.StartsWith("FETCH"))
             {
-                answer = "FETCH?";
-
-                answer += game.GetBoardAsString();
-                answer += ";" + game.GetFieldStatuses();
+                answer = "FETCH?" + FetchBoard();
             }
 
             return answer;
