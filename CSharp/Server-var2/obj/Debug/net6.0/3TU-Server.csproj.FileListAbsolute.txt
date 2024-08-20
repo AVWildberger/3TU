@@ -1,0 +1,44 @@
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.exe
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.deps.json
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.runtimeconfig.json
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.dll
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.pdb
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.csproj.AssemblyReference.cache
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.GeneratedMSBuildEditorConfig.editorconfig
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.AssemblyInfoInputs.cache
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.AssemblyInfo.cs
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.csproj.CoreCompileInputs.cache
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.dll
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\refint\3TU-Server.dll
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.pdb
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.genruntimeconfig.cache
+G:\Meine Ablage\Privat\Programme\3TU\CSharp\3TU-Server\obj\Debug\net6.0\ref\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.exe
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.deps.json
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.runtimeconfig.json
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\bin\Debug\net6.0\3TU-Server.pdb
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.AssemblyInfoInputs.cache
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.AssemblyInfo.cs
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.csproj.CoreCompileInputs.cache
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.sourcelink.json
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\refint\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.pdb
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\3TU-Server.genruntimeconfig.cache
+C:\Users\Deniz\OneDrive\Dokumente\VSC\3TU\CSharp\3TU-Server\obj\Debug\net6.0\ref\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\bin\Debug\net6.0\3TU-Server.exe
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\bin\Debug\net6.0\3TU-Server.deps.json
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\bin\Debug\net6.0\3TU-Server.runtimeconfig.json
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\bin\Debug\net6.0\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\bin\Debug\net6.0\3TU-Server.pdb
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.AssemblyInfoInputs.cache
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.AssemblyInfo.cs
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.csproj.CoreCompileInputs.cache
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\refint\3TU-Server.dll
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.pdb
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\3TU-Server.genruntimeconfig.cache
+C:\Users\Deniz\OneDrive\Dokumente\3TU-Server V2\obj\Debug\net6.0\ref\3TU-Server.dll

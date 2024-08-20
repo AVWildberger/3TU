@@ -69,24 +69,11 @@ function generateGame() {
 }
 // Get cell by field and cell number
 function getCell(field, fieldCell) {
-    const rowInFieldIndex = Math.floor((fieldCell-1)/3);
-    const cellInFieldIndex = Math.floor((fieldCell-1)%3);
-
-    const docField = getField(field);
-    const docInnerRow = docField.getElementsByClassName('inner-row')[rowInFieldIndex];
-    const docCell = docInnerRow.getElementsByClassName('cell')[cellInFieldIndex];
-
-    return docCell;
+    return getField(field).getElementsByClassName('cell')[fieldCell-1];
 }
 // Get field by field number
 function getField(field) {
-    const rowIndex = Math.floor((field-1)/3);
-    const fieldInRowIndex = Math.floor((field-1)%3);
-
-    const docRow = document.getElementsByClassName('row')[rowIndex];
-    const docField = docRow.getElementsByClassName('field')[fieldInRowIndex];
-
-    return docField;
+    return document.getElementsByClassName('field')[field-1];
 }
 // Convert indexed notation to algebraic notation
 function indexedToNotation(row, col, char) {
@@ -121,7 +108,7 @@ function clickCell(row, col) {
     const cellContent = cellDiv.getElementsByTagName('p')[0];
     
     // TODO: Remove this
-    updateCell(notation, notation.charAt(2));
+    // updateCell(notation, notation.charAt(2));
 
 
     // Attempt to place a field
@@ -155,13 +142,36 @@ function updateCell(notation, nextField) {
 
     // Highlight next field
 
-    for (let i = 1; i <= 9; i++) {
-        const field = getField(i);
+    if (nfAsNumb === 0) {
+        const packet = 'WIN';
+        ws.send(packet);
+    } else {       
+        for (let i = 1; i <= 9; i++) {
+            const field = getField(i);
 
-        if (i === nfAsNumb) {
-            field.classList.add('highlight');
+            if (i === nfAsNumb) {
+                field.classList.add('highlight');
+            } else {
+                field.classList.remove('highlight');
+            }
+        }
+    }
+}
+// Highlight won fields
+function highlightWonFields(fields) {
+    // fields are input as a string like this: XO_XXOO__
+
+    for (let i = 0; i < fields.length; i++) {
+        const field = getField(i+1);
+
+        if (fields.charAt(i) === 'X') {
+            field.classList.add('won-x');
+        } else if (fields.charAt(i) === 'O') {
+            field.classList.add('won-o');
         } else {
-            field.classList.remove('highlight');
+            field.classList.remove('won-x');
+            field.classList.remove('won-o');
+            field.classList.add('highlight');
         }
     }
 }
@@ -177,18 +187,9 @@ ws.onopen = () => {
 ws.onmessage = (message) => {
     console.log(`Received server message: ${message.data}`);
 
-    const msgType = '';
-    const data = message.data.split(';');
-
-    // seperate message type and data
-    data = data.map((item) => {
-        if (item.includes('?')) {
-            const [before, after] = item.split('?');
-            msgType = before;
-            return after;
-        }
-        return item;
-    });
+    const [before, after] = message.data.split('?');
+    const msgType = before;
+    const data = after.split(';');
 
     // Handle message types
     switch (msgType) {
@@ -197,6 +198,15 @@ ws.onmessage = (message) => {
                 updateCell(data[1], data[2]);
             } else {
                 console.log('[Server] Invalid placement');
+            }
+            break;
+        case 'WIN':
+            if (data[0].toUpperCase() === 'TRUE') {
+                console.log('[Server] Game over');
+            } else if (data[0].toUpperCase() === 'TIE') {
+                console.log('[Server] Tie');
+            } else {
+                highlightWonFields(data[1]);
             }
             break;
         default:
