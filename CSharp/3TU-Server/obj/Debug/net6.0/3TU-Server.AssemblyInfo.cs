@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("3TU-Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ffc8743b4995e4bfcb2c6af45ffe1de223a77a51")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+619e210d01c28fd1930f7426a3344d12da4618f3")]
 [assembly: System.Reflection.AssemblyProductAttribute("3TU-Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("3TU-Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

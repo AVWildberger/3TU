@@ -2,13 +2,14 @@
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
-using System.Xml;
+using _3TU_Server;
+using System.Reflection;
 
 namespace _3TU_C_
 {
     internal class Logic
     {
-        static bool?[,] gameBoard = InitGameBoard();
+        static Player[,] gameBoard = InitGameBoard();
 
         static async Task Main()
         {
@@ -42,66 +43,129 @@ namespace _3TU_C_
         }
 
 
-        static bool?[,] InitGameBoard()
+        static Player[,] InitGameBoard()
         {
-            return new bool?[9, 9];
+            Player[,] board = new Player[9, 9];
+
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
+                {
+                    board[i, j] = new Player();
+                }
+            }
+
+            return board;
         }
 
-        //returns what field to play next in
-        static byte PlacePlayer(bool player, byte x, byte y)
+        //returns what field to play next in. 0 if every field is allowed.
+        static byte PlacePlayer(Player player, byte x, byte y)
         {
             gameBoard[x, y] = player;
 
-            return Convert.ToByte((x % 3 + 1) + (y % 3 * 3));
+            byte nextField = Convert.ToByte((x % 3 + 1) + (y % 3 * 3));
+
+            States[,] boardStates = GetBoardStates(gameBoard);
+
+            byte a = Convert.ToByte(nextField - 1);
+
+            byte row = Convert.ToByte((a - a % 3) / 3);
+            byte col = Convert.ToByte(a % 3);
+
+            if (boardStates[col, row].Status != States.State.None) return 0;
+
+            return nextField;
         }
 
-        static bool HasWon(bool?[,] board, out bool? winner, out bool?[,] capturedFields)
+        static bool HasWon(Player[,] board, out Player winner, out States[,] boardState)
         {
-            capturedFields = new bool?[3, 3];
+            boardState = GetBoardStates(board);
+
+            return IsFieldWon<States>(boardState, out winner);
+        }
+
+        static States[,] GetBoardStates(Player[,] board)
+        {
+            States[,] boardStates = new States[3, 3];
 
             for (int row = 0; row < board.GetLength(0) / 3; row++)
             {
                 for (int col = 0; col < board.GetLength(1) / 3; col++)
                 {
-                    capturedFields[row, col] = FieldStatus(board, row * 3, col * 3);
+                    boardStates[row, col] = CheckFieldState(board, row * 3, col * 3);
                 }
             }
 
-            winner = FieldStatus(capturedFields);
-
-            if (winner == null) return false;
-
-            return true;
+            return boardStates;
         }
 
-        static bool? FieldStatus(bool?[,] board, int firstX = 0, int firstY = 0)
+        static States CheckFieldState(Player[,] board, int firstX = 0, int firstY = 0)
         {
-            /* 1|2|3 *
-             * 4|5|6 *
-             * 7|8|9 */
-            bool? field1 = board[firstX, firstY];
-            bool? field2 = board[firstX + 1, firstY];
-            bool? field3 = board[firstX + 2, firstY];
-            bool? field4 = board[firstX, firstY + 1];
-            bool? field5 = board[firstX + 1, firstY + 1];
-            bool? field6 = board[firstX + 2, firstY + 1];
-            bool? field7 = board[firstX, firstY + 2];
-            bool? field8 = board[firstX + 1, firstY + 2];
-            bool? field9 = board[firstX + 2, firstY + 2];
+            Player[,] field = Sub2DArray(board, firstX, firstY, 3, 3);
+            States state = new States();
 
-            bool capturedPlayer = true;
+            if (IsFieldWon(field, out Player winner))
+            {
+                state.Status = States.State.Won;
+                state.Winner = winner.State;
+            }
+            else if (IsFieldFull(field))
+            {
+                state.Status = States.State.Tie;
+            }
+            else
+            {
+                state.Status = States.State.None;
+            }
 
-            if (AreSameAndNotNull(field1, field2, field3, ref capturedPlayer) || // Option: 1
-                AreSameAndNotNull(field4, field5, field6, ref capturedPlayer) || // Option: 2
-                AreSameAndNotNull(field7, field8, field9, ref capturedPlayer) || // Option: 3
-                AreSameAndNotNull(field1, field4, field7, ref capturedPlayer) || // Option: 4
-                AreSameAndNotNull(field2, field5, field8, ref capturedPlayer) || // Option: 5
-                AreSameAndNotNull(field3, field6, field9, ref capturedPlayer) || // Option: 6
-                AreSameAndNotNull(field1, field5, field9, ref capturedPlayer) || // Option: 7
-                AreSameAndNotNull(field3, field5, field7, ref capturedPlayer))   // Option: 8
-            { return capturedPlayer; }
+            return state;
+        }
 
-            return null;
+        static T[,] Sub2DArray<T>(T[,] arr, int firstX, int firstY, int newRows, int newCols)
+        {
+            T[,] newArr = new T[newRows, newCols];
+
+            for (int i = firstY; i < firstY + newRows; i++)
+            {
+                for (int j = firstX; j < firstX + newCols; j++)
+                {
+                    newArr[i - firstY, j - firstX] = arr[i, j];
+                }
+            }
+
+            return newArr;
+        }
+
+        static bool IsLegalPlacement(Player[,] board, int row, int col)
+        {
+            return (!HasWon(board, out _, out States[,] capturedFields) && capturedFields[row / 3, col / 3].Status == States.State.None && board[row, col].State == Player.PlayerStates.Null);
+        }
+
+        static bool AreSameAndNotDefault<T>(T a, T b, T c, ref Player winner) where T : IWinnable
+        {
+            bool value = false;
+
+            if (a != null && !a.Equals(default(T)) && a.Equals(b) && b.Equals(c))
+            {
+                winner.State = a.GetWinner();
+                value = true;
+            }
+
+            return value;
+        }
+
+        static bool IsFieldWon<T>(T[,] field, out Player winner) where T : IWinnable
+        {
+            winner = new Player();
+
+            return  AreSameAndNotDefault(field[0, 0], field[1, 0], field[2, 0], ref winner) || // Option: 1
+                    AreSameAndNotDefault(field[0, 1], field[1, 1], field[2, 1], ref winner) || // Option: 2
+                    AreSameAndNotDefault(field[0, 2], field[1, 2], field[2, 2], ref winner) || // Option: 3
+                    AreSameAndNotDefault(field[0, 0], field[0, 1], field[0, 2], ref winner) || // Option: 4
+                    AreSameAndNotDefault(field[1, 0], field[1, 1], field[1, 2], ref winner) || // Option: 5
+                    AreSameAndNotDefault(field[2, 0], field[2, 1], field[2, 2], ref winner) || // Option: 6
+                    AreSameAndNotDefault(field[0, 0], field[1, 1], field[2, 2], ref winner) || // Option: 7
+                    AreSameAndNotDefault(field[2, 0], field[1, 1], field[0, 2], ref winner);   // Option: 8
 
             #region Options
             /* * * * * * * * * * * * * * * * * * *
@@ -126,20 +190,17 @@ namespace _3TU_C_
             #endregion
         }
 
-        static bool IsLegalPlacement(bool?[,] board, int row, int col)
+        static bool IsFieldFull(Player[,] field)
         {
-            return (!HasWon(board, out _, out bool?[,] capturedFields) && capturedFields[row / 3, col / 3] == null && board[row, col] == null);
-        }
-
-        static bool AreSameAndNotNull(bool? a, bool? b, bool? c, ref bool boolValue)
-        {
-            if (a != null && a == b && b == c)
+            for (int i = 0; i < field.GetLength(0); i++)
             {
-                boolValue = Convert.ToBoolean(a);
-                return true;
+                for (int j = 0; j < field.GetLength(1); j++)
+                {
+                    if (field[i, j].State == Player.PlayerStates.Null) { return false; }
+                }
             }
 
-            return false;
+            return true;
         }
 
         static async Task HandleWebSocketConnection(WebSocket webSocket)
@@ -174,26 +235,20 @@ namespace _3TU_C_
             {
                 answer = "WIN?";
 
-                bool hasWon = HasWon(gameBoard, out bool? winner, out bool?[,] capturedFields);
+                bool hasWon = HasWon(gameBoard, out Player winner, out States[,] capturedFields);
 
                 if (hasWon)
                 {
-                    answer += "TRUE";
+                    answer += "TRUE;";
 
-                    if (winner == true) { answer += ";X"; }
-                    else { answer += ";O"; }
+                    answer += winner.ToString();
                 }
                 else
                 {
-                    answer += "TIE";
-
-                    foreach (bool? b in capturedFields)
-                    {
-                        if (b == null) { answer = "FALSE"; }
-                    }
+                    answer += "FALSE";
                 }
 
-                answer += "," + Convert2DBoolArrayToString(gameBoard);
+                answer += ";" + Convert2DBoolArrayToString(capturedFields);
             }
             else if (request.StartsWith("PLACE"))
             {
@@ -211,30 +266,46 @@ namespace _3TU_C_
                 if (isLegal)
                 {
                     answer += $";{algebraicNotation}";
-                    answer += ";" + PlacePlayer(arr[1][0] == 'X', x, y).ToString();
+                    answer += ";" + PlacePlayer(ConvertCharToPlayerState(arr[1][0]), x, y).ToString();
                 }
             }
 
             return answer;
         }
 
-        static string Convert2DBoolArrayToString(bool?[,] arr)
+        static Player ConvertCharToPlayerState(char c)
+        {
+            Player player = new Player();
+
+            if (c == 'X') player.State = Player.PlayerStates.X;
+            else if (c == 'O') player.State = Player.PlayerStates.O;
+            else player.State = Player.PlayerStates.Null;
+
+            return player;
+        }
+
+        static string Convert2DBoolArrayToString(States[,] arr)
         {
             string result = "";
 
-            foreach (bool? b in arr)
+            for (int i = 0; i < arr.GetLength(0); i++)
             {
-                if (b == true)
+                for (int j = 0; j < arr.GetLength(1); j++)
                 {
-                    result += "X";
-                }
-                else if (b == false)
-                {
-                    result += "O";
-                }
-                else
-                {
-                    result += "_";
+                    States status = arr[j, i];
+
+                    if (status.Status == States.State.Won)
+                    {
+                        result += status.Winner.ToString();
+                    }
+                    else if (status.Status == States.State.Tie)
+                    {
+                        result += "T";
+                    }
+                    else
+                    {
+                        result += "_";
+                    }
                 }
             }
 
