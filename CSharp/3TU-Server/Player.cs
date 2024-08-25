@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace _3TU_Server
+﻿namespace _3TU_Server
 {
     public class Player : IWinnable
     {
@@ -24,15 +18,6 @@ namespace _3TU_Server
         public Player() { }
 
         /// <summary>
-        /// constructor to directly set the Player State.
-        /// </summary>
-        /// <param name="state"></param>
-        public Player(PlayerStates state)
-        {
-            Status = state;
-        }
-
-        /// <summary>
         /// constructor to directly set the Player State
         /// </summary>
         /// <param name="state"></param>
@@ -47,9 +32,9 @@ namespace _3TU_Server
         /// <returns>returns the randomized beginner.</returns>
         static public PlayerStates GetRandomBeginner()
         {
-            Random rand = new Random();
+            Random rand = new();
 
-            if (rand.Next(0, 1) == 0)
+            if (rand.Next(0, 2) == 0)
             {
                 return PlayerStates.O;
             }
@@ -110,6 +95,17 @@ namespace _3TU_Server
             if (boardStates[col, row].Status != States.State.None) return 0;
 
             return nextField;
+        }
+
+        /// <summary>
+        /// Gets player who has played last time and gets player whos turn is next.
+        /// </summary>
+        /// <param name="player">old player</param>
+        /// <returns>returns next player to play.</returns>
+        public static PlayerStates SwitchPlayer(Player player)
+        {
+            if (player.Status == PlayerStates.X) { return PlayerStates.O; }
+            else { return PlayerStates.X; }
         }
     }
 }

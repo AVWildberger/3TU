@@ -1,16 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using _3TU_Server;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
-using _3TU_Server;
-using System.Reflection;
 
 namespace _3TU_C_
 {
     internal class Logic
     {
         private static Player[,] gameBoard = Player.InitGameBoard();
-        private static Player nextPlayer = new Player(Player.GetRandomBeginner());
+        private static Player.PlayerStates nextPlayer = Player.GetRandomBeginner();
         private static byte nextField = 0;
 
         /// <summary>
@@ -84,14 +82,15 @@ namespace _3TU_C_
         /// </summary>
         /// <param name="request">request from the client</param>
         /// <returns>returns the response to send to the client.</returns>
-        static string GetAnswer(string request)
+        static string GetAnswer(string originalRequest)
         {
-            string answer = "";
+            string[] splitRequest = originalRequest.Split('?');
 
-            if (request.StartsWith("WIN"))
+            string answer = splitRequest[0] + "?";
+            string request = splitRequest[1];
+
+            if (answer == "WIN?")
             {
-                answer = "WIN?";
-
                 States gameState = Checker.HasWon(gameBoard, out States[,] capturedFields);
 
                 if (gameState.Status == States.State.Won)
@@ -107,15 +106,13 @@ namespace _3TU_C_
 
                 answer += ";" + Utils.ConvertFieldToString(capturedFields);
             }
-            else if (request.StartsWith("PLACE"))
+            else if (answer == "PLACE?")
             {
-                answer = "PLACE?";
-
                 string[] arr = request.Split(';');
 
-                string algebraicNotation = arr[1];
+                string algebraicNotation = arr[0];
 
-                Utils.ConvertNotationToCoordinates(algebraicNotation, out byte x, out byte y);
+                nextPlayer = Player.SwitchPlayer(Utils.ConvertNotationToCoordinates(algebraicNotation, out byte x, out byte y));
 
                 bool isLegal = Checker.IsLegalPlacement(gameBoard, x, y);
                 answer += isLegal.ToString().ToUpper();
@@ -123,20 +120,18 @@ namespace _3TU_C_
                 if (isLegal)
                 {
                     answer += $";{algebraicNotation}";
-                    nextField = Utils.ConvertCharToPlayerState(arr[1][0]).Place(ref gameBoard, x, y);
+                    nextField = Utils.ConvertCharToPlayerState(arr[0][0]).Place(ref gameBoard, x, y);
                     answer += ";" + nextField.ToString();
                 }
             }
-            else if (request.StartsWith("FETCH"))
+            else if (answer == "FETCH?")
             {
-                answer = "FETCH?";
-
                 answer += Utils.ConvertFieldToString(gameBoard) + ";";
 
                 States.GetBoardState(gameBoard, out States[,] boardStates);
                 answer += Utils.ConvertFieldToString(boardStates) + ";";
 
-                answer += nextPlayer.Status.ToString() + ";";
+                answer += nextPlayer.ToString() + ";";
 
                 answer += nextField.ToString();
             }
@@ -144,6 +139,5 @@ namespace _3TU_C_
             return answer;
         }
         #endregion
-
     }
 }

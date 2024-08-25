@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace _3TU_Server
 {
@@ -76,7 +72,7 @@ namespace _3TU_Server
         /// <param name="notation">algebraic notation</param>
         /// <param name="posX">x-coordinate</param>
         /// <param name="posY">y-coordinate</param>
-        /// <returns>returns the Player in the algebraic notation</returns>
+        /// <returns>returns the Player in the algebraic notation (first char)</returns>
         public static Player ConvertNotationToCoordinates(string notation, out byte posX, out byte posY)
         {
             int grid = notation[1] - 1 - '0';
@@ -120,7 +116,7 @@ namespace _3TU_Server
         /// <returns>returns Player object which holds the PlayerState form of the char.</returns>
         public static Player ConvertCharToPlayerState(char c)
         {
-            Player player = new Player();
+            Player player = new();
 
             if (c == 'X') player.Status = Player.PlayerStates.X;
             else if (c == 'O') player.Status = Player.PlayerStates.O;
@@ -143,7 +139,7 @@ namespace _3TU_Server
 
             string[] responseArr = response.Split('?');
             string[] details = responseArr[1].Split(';');
-            
+
             if (responseArr[0] == "WIN")
             {
                 Console.WriteLine($"Gamestatus: {details[0]}");

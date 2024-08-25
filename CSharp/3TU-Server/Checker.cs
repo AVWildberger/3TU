@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace _3TU_Server
+﻿namespace _3TU_Server
 {
     internal static class Checker
     {
@@ -63,8 +57,6 @@ namespace _3TU_Server
         /// <returns>returns bool object which checks if 3 given types are the same not default.</returns>
         public static bool IsFieldWon<T>(T[,] field, out Player winner) where T : IWinnable
         {
-            winner = new Player();
-
             return AreSameAndNotDefault(field[0, 0], field[1, 0], field[2, 0], out winner) || // Option: 1
                     AreSameAndNotDefault(field[0, 1], field[1, 1], field[2, 1], out winner) || // Option: 2
                     AreSameAndNotDefault(field[0, 2], field[1, 2], field[2, 2], out winner) || // Option: 3
@@ -127,7 +119,7 @@ namespace _3TU_Server
         public static States CheckFieldState<T>(T[,] field, int firstX = 0, int firstY = 0) where T : IWinnable
         {
             T[,] newField = Utils.Sub2DArray(field, firstX, firstY, 3, 3);
-            States state = new States();
+            States state = new();
 
             if (IsFieldWon(newField, out Player winner))
             {
