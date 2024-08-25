@@ -13,6 +13,9 @@ namespace _3TU_C_
         private static Player nextPlayer = new Player(Player.GetRandomBeginner());
         private static byte nextField = 0;
 
+        /// <summary>
+        /// Handles Main Process of Server. Default Start-Method.
+        /// </summary>
         static async Task Main()
         {
             #region WebSocket
@@ -42,6 +45,10 @@ namespace _3TU_C_
         }
 
         #region Websocket
+        /// <summary>
+        /// Handles the Websocket Connection with the client.
+        /// </summary>
+        /// <param name="webSocket">Websocket Object</param>
         static async Task HandleWebSocketConnection(WebSocket webSocket)
         {
             bool debug = false;
@@ -72,6 +79,11 @@ namespace _3TU_C_
             }
         }
 
+        /// <summary>
+        /// Generates the answer from the request from the client.
+        /// </summary>
+        /// <param name="request">request from the client</param>
+        /// <returns>returns the response to send to the client.</returns>
         static string GetAnswer(string request)
         {
             string answer = "";
@@ -127,12 +139,6 @@ namespace _3TU_C_
                 answer += nextPlayer.Status.ToString() + ";";
 
                 answer += nextField.ToString();
-            }
-            else if (request.StartsWith("BEGIN"))
-            {
-                answer += "BEGIN?";
-
-                answer += nextPlayer.ToString();
             }
 
             return answer;
