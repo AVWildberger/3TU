@@ -18,6 +18,7 @@ namespace _3TU_Server
         public char NextPlayer { get { return nextPlayer; } }
 
         public GameStatus State { get; private set; }
+        public List<string> PlayedMoves { get; private set; }
 
         public string GetBoardAsString()
         {
@@ -73,12 +74,14 @@ namespace _3TU_Server
         {
             gameFields = InitGameFields();
             fieldStatuses = new GameStatus[9];
+            PlayedMoves = new List<string>();
         }
 
         public void ResetGame()
         {
             gameFields = InitGameFields();
             fieldStatuses = new GameStatus[9];
+            PlayedMoves = new List<string>();
         }
 
         public static Field[] InitGameFields()
@@ -120,6 +123,8 @@ namespace _3TU_Server
                 }
 
                 nextPlayer = player == 'X' ? 'O' : 'X';
+
+                PlayedMoves.Add(notation);
 
                 nextField = GetNextField(targetCell);
                 return nextField;
@@ -184,6 +189,11 @@ namespace _3TU_Server
             }
 
             return GameStatus.None;
+        }
+
+        internal string GetLogs()
+        {
+            return string.Join(";", PlayedMoves);
         }
     }
 }

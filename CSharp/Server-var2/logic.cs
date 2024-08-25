@@ -117,8 +117,8 @@ namespace _3TU_C_
             {
                 answer = "PLACE?";
 
-                string[] arr = request.Split(';');
-                string algebraicNotation = arr[1];
+                string[] arr = request.Split('?')[1].Split(';');
+                string algebraicNotation = arr[0];
 
                 int next = game.PlacePlayer(algebraicNotation);
 
@@ -144,6 +144,10 @@ namespace _3TU_C_
             else if (request.StartsWith("FETCH"))
             {
                 answer = "FETCH?" + FetchBoard();
+            }
+            else if (request.StartsWith("LOG"))
+            {
+                answer = "LOG?" + game.GetLogs();
             }
 
             return answer;

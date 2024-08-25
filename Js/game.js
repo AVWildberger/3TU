@@ -100,19 +100,14 @@ function logCellAsNotation(row, col, content) {
 }
 // Handle cell click
 function clickCell(row, col) {
-    // console.log(row, col)
     const notation = `${turn}${row}${col}`;
 
     // Get cell and cell content
     const cellDiv = getCell(notation.charAt(1), notation.charAt(2));
     const cellContent = cellDiv.getElementsByTagName('p')[0];
-    
-    // TODO: Remove this
-    // updateCell(notation, notation.charAt(2));
-
 
     // Attempt to place a field
-    const packet = `PLACE;${notation}`; 
+    const packet = `PLACE?${notation}`; 
     ws.send(packet);
 }
 // Update cell content and highlight next field
@@ -124,8 +119,6 @@ function updateCell(notation, nextField) {
         nfAsNumb = parseInt(nextField);
     }
 
-    console.log(`Updating cell: ${notation}`);
-    console.log(`Next field: ${nextField}`);
     // Get cell and cell content
     const cellDiv = getCell(notation.charAt(1), notation.charAt(2));
     const cellContent = cellDiv.getElementsByTagName('p')[0];
@@ -159,12 +152,19 @@ function markWonFields(fields) {
         if (fields.charAt(i) === 'X') {
             field.classList.add('won-x');
             field.classList.remove('won-o');
+            field.classList.remove('tie');
         } else if (fields.charAt(i) === 'O') {
-            field.classList.add('won-o');
             field.classList.remove('won-x');
+            field.classList.add('won-o');
+            field.classList.remove('tie');
         } else {
             field.classList.remove('won-x');
             field.classList.remove('won-o');
+            if (fields.charAt(i) === 'T') {
+                field.classList.add('tie');
+            } else {
+                field.classList.remove('tie');
+            }
         }
     }
 }
@@ -177,7 +177,7 @@ function highlightFields(fields) {
     for (let i = 0; i < fields.length; i++) {
         const field = getField(i+1);
 
-        if (field.classList.contains('won-x') || field.classList.contains('won-o')) {
+        if (field.classList.contains('won-x') || field.classList.contains('won-o') || field.classList.contains('tie')) {
             field.classList.remove('highlight');
         } else {
             field.classList.add('highlight');
@@ -224,8 +224,6 @@ function syncBoardData(data) {
             cellContent.classList.remove('x');
             cellContent.classList.remove('o');
         }
-
-        // console.log(`Synced cell ${i+1}/${cellStates.length}`);
     }
 
     turn = data[2].charAt(0);
@@ -236,6 +234,11 @@ function syncBoardData(data) {
         markWonFields(data[1]);
         highlightField(data[3].charAt(0) - '0');
     }
+}
+// Get logs of the game
+function getLogs() {
+    const packet = 'LOG';
+    ws.send(packet);
 }
 
 // Generate game
@@ -276,6 +279,9 @@ ws.onmessage = (message) => {
             break;
         case 'FETCH':
             syncBoardData(data);
+            break;
+        case 'LOG':
+            console.log(data.toString());
             break;
         default:
             console.log(`Unknown server message type: ${msgType}`);
