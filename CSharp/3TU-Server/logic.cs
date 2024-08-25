@@ -10,6 +10,8 @@ namespace _3TU_C_
     internal class Logic
     {
         private static Player[,] gameBoard = Player.InitGameBoard();
+        private static Player nextPlayer = new Player(Player.GetRandomBeginner());
+        private static byte nextField = 0;
 
         static async Task Main()
         {
@@ -17,7 +19,7 @@ namespace _3TU_C_
             HttpListener httpListener = new();
             httpListener.Prefixes.Add("http://localhost:8080/");
             httpListener.Start();
-            Console.WriteLine("WebSocket server started at ws://localhost:8080/");
+            Console.WriteLine("WebSocket server started at ws://localhost:8080/\n");
 
             while (true)
             {
@@ -42,6 +44,8 @@ namespace _3TU_C_
         #region Websocket
         static async Task HandleWebSocketConnection(WebSocket webSocket)
         {
+            bool debug = false;
+
             byte[] buffer = new byte[1024];
 
             while (webSocket.State == WebSocketState.Open)
@@ -50,14 +54,16 @@ namespace _3TU_C_
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Console.WriteLine($"\n> | {receivedMessage}");
+                    Console.WriteLine($"> | {receivedMessage}");
 
                     string response = GetAnswer(receivedMessage);
 
                     byte[] responseBuffer = Encoding.UTF8.GetBytes(response);
                     await webSocket.SendAsync(new ArraySegment<byte>(responseBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
-                    Console.WriteLine($"< | {response}");
+                    Console.WriteLine($"< | {response}\n");
+
+                    if (debug) { Utils.PrintDebugInfos(gameBoard, response); }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -87,7 +93,7 @@ namespace _3TU_C_
                     answer += "FALSE";
                 }
 
-                answer += ";" + Utils.Convert2DBoolArrayToString(capturedFields);
+                answer += ";" + Utils.ConvertFieldToString(capturedFields);
             }
             else if (request.StartsWith("PLACE"))
             {
@@ -105,8 +111,28 @@ namespace _3TU_C_
                 if (isLegal)
                 {
                     answer += $";{algebraicNotation}";
-                    answer += ";" + Utils.ConvertCharToPlayerState(arr[1][0]).Place(ref gameBoard, x, y).ToString();
+                    nextField = Utils.ConvertCharToPlayerState(arr[1][0]).Place(ref gameBoard, x, y);
+                    answer += ";" + nextField.ToString();
                 }
+            }
+            else if (request.StartsWith("FETCH"))
+            {
+                answer = "FETCH?";
+
+                answer += Utils.ConvertFieldToString(gameBoard) + ";";
+
+                States.GetBoardState(gameBoard, out States[,] boardStates);
+                answer += Utils.ConvertFieldToString(boardStates) + ";";
+
+                answer += nextPlayer.Status.ToString() + ";";
+
+                answer += nextField.ToString();
+            }
+            else if (request.StartsWith("BEGIN"))
+            {
+                answer += "BEGIN?";
+
+                answer += nextPlayer.ToString();
             }
 
             return answer;

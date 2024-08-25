@@ -11,6 +11,27 @@ namespace _3TU_Server
         public enum PlayerStates { Null, X, O }
         public PlayerStates Status { get; set; }
 
+        public Player() { }
+
+        public Player(PlayerStates state)
+        {
+            Status = state;
+        }
+
+        static public PlayerStates GetRandomBeginner()
+        {
+            Random rand = new Random();
+
+            if (rand.Next(0, 1) == 0)
+            {
+                return PlayerStates.O;
+            }
+            else
+            {
+                return PlayerStates.X;
+            }
+        }
+
         public Player.PlayerStates GetWinner()
         {
             return this.Status;
