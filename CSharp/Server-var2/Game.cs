@@ -103,8 +103,6 @@ namespace _3TU_Server
             int targetField = notation[1] - '0' - 1;
             int targetCell = notation[2] - '0' - 1;
 
-            Console.WriteLine($"Expected: {nextField} Actual: {targetField}");
-
             if (targetField < 0 || targetField  >  8 || gameFields[targetField].State != GameStatus.None)
             {
                 return -1;
