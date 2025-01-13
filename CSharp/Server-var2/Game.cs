@@ -97,16 +97,24 @@ namespace _3TU_Server
         }
 
         // returns what field to play next in. 0 if every field is allowed. -1 if the input notation is invalid.
-        public int PlacePlayer(string notation)
+        public int PlacePlayer(string notation) 
         {
             char player = notation[0];
             int targetField = notation[1] - '0' - 1;
             int targetCell = notation[2] - '0' - 1;
 
+            Console.WriteLine($"Expected: {nextField} Actual: {targetField}");
+
             if (targetField < 0 || targetField  >  8 || gameFields[targetField].State != GameStatus.None)
             {
                 return -1;
             }
+
+            if (nextField != 0 && targetField+1 != nextField)
+            {
+                return -1;
+            }
+
 
             if (player != nextPlayer)
             {
